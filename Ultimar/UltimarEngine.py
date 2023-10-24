@@ -11,6 +11,7 @@ from copy import deepcopy
 vectors = ((-1, 0), (-1, 1), (0, 1), (1, 1), (1, 0), (1, -1), (0, -1), (-1, -1))
 borders = ((-1, 0), (0, 1), (1, 0), (0, -1))
 pieces = ['P', 'O', 'L', 'C', 'W', 'K', 'H', 'I']
+boardSelect = True
 
 class GameState():
     def __init__(self):
@@ -19,19 +20,23 @@ class GameState():
         ['b', 'C', False, ['iC', 'iC', 'iC', 'iC'], ['i', 'i']]
         new : [0: color][1: piecetype][2: withdrawn log][3: acitng as Immob][4: immobilisedLog]
         '''
-        self.board = [
-            [["b", "K", False, False, []], ["b", "L", False, False, []], ["b", "C", False, [], []], ["b", "W", False, False, []], 
-             ["b", "K", False, False, []], ["b", "H", False, [], []], ["b", "L", False, False, []], ["b", "I", False, [('I')], []]],
+        if boardSelect:
+            self.board = [
+            [["b", "O", False, False, []], ["b", "L", False, False, []], ["b", "C", False, [], []], ["b", "W", False, False, []], 
+                ["b", "K", False, False, []], ["b", "H", False, [], []], ["b", "L", False, False, []], ["b", "I", False, [('I')], []]],
             [["b", "P", False, False, []], ["b", "P", False, False, []], ["b", "P", False, False, []], ["b", "P", False, False, []], 
-             ["b", "K", False, False, []], ["b", "K", False, False, []], ["b", "K", False, False, []], ["b", "K", False, False, []]],
+                ["b", "P", False, False, []], ["b", "P", False, False, []], ["b", "P", False, False, []], ["b", "P", False, False, []]],
             [[], [], [], [], [], [], [], []],
             [[], [], [], [], [], [], [], []],
             [[], [], [], [], [], [], [], []],
             [[], [], [], [], [], [], [], []],
             [["w", "P", False, False, []], ["w", "P", False, False, []], ["w", "P", False, False, []], ["w", "P", False, False, []], 
-             ["w", "P", False, False, []], ["w", "P", False, False, []], ["w", "P", False, False, []], ["w", "P", False, False, []]],
+                ["w", "P", False, False, []], ["w", "P", False, False, []], ["w", "P", False, False, []], ["w", "P", False, False, []]],
             [["w", "I", False, [('i')], []], ["w", "L", False, False, []], ["w", "C", False, [], []], ["w", "W", False, False, []], 
-             ["w", "K", False, False, []], ["w", "H", False, [], []], ["w", "L", False, False, []], ["w", "O", False, False, []]]]
+                ["w", "K", False, False, []], ["w", "H", False, [], []], ["w", "L", False, False, []], ["w", "O", False, False, []]]]
+        else:
+            self.board = flippedBoard
+
         self.moveFunctions = {'P': self.getPawnMoves, 'I': self.getImmobiliserMoves, 'L': self.getLeaperMoves,
                               'C': self.getChameleonMoves, 'H': self.getChameleonMoves, 'K': self.getKingMoves,
                               'W': self.getWithdrawerMoves, 'O': self.getCoordinatorMoves}
@@ -398,4 +403,35 @@ class Move():
 
     def getRankFile(self, r, c):
         return self.colsToFiles[c] + self.rowsToRanks[r]
+    
+defaultBoard = [
+            [["b", "O", False, False, []], ["b", "L", False, False, []], ["b", "C", False, [], []], ["b", "W", False, False, []], 
+                ["b", "K", False, False, []], ["b", "H", False, [], []], ["b", "L", False, False, []], ["b", "I", False, [('I')], []]],
+            [["b", "P", False, False, []], ["b", "P", False, False, []], ["b", "P", False, False, []], ["b", "P", False, False, []], 
+                ["b", "P", False, False, []], ["b", "P", False, False, []], ["b", "P", False, False, []], ["b", "P", False, False, []]],
+            [[], [], [], [], [], [], [], []],
+            [[], [], [], [], [], [], [], []],
+            [[], [], [], [], [], [], [], []],
+            [[], [], [], [], [], [], [], []],
+            [["w", "P", False, False, []], ["w", "P", False, False, []], ["w", "P", False, False, []], ["w", "P", False, False, []], 
+                ["w", "P", False, False, []], ["w", "P", False, False, []], ["w", "P", False, False, []], ["w", "P", False, False, []]],
+            [["w", "I", False, [('i')], []], ["w", "L", False, False, []], ["w", "C", False, [], []], ["w", "W", False, False, []], 
+                ["w", "K", False, False, []], ["w", "H", False, [], []], ["w", "L", False, False, []], ["w", "O", False, False, []]]]
+
+flippedBoard = [
+            [["w", "O", False, False, []], ["w", "L", False, False, []], ["w", "C", False, [], []], ["w", "W", False, False, []], 
+                ["w", "K", False, False, []], ["w", "H", False, [], []], ["w", "L", False, False, []], ["w", "I", False, [('I')], []]],
+            [["w", "P", False, False, []], ["w", "P", False, False, []], ["w", "P", False, False, []], ["w", "P", False, False, []], 
+                ["w", "P", False, False, []], ["w", "P", False, False, []], ["w", "P", False, False, []], ["w", "P", False, False, []]],
+            [[], [], [], [], [], [], [], []],
+            [[], [], [], [], [], [], [], []],
+            [[], [], [], [], [], [], [], []],
+            [[], [], [], [], [], [], [], []],
+            [["b", "P", False, False, []], ["b", "P", False, False, []], ["b", "P", False, False, []], ["b", "P", False, False, []], 
+                ["b", "P", False, False, []], ["b", "P", False, False, []], ["b", "P", False, False, []], ["b", "P", False, False, []]],
+            [["b", "I", False, [('i')], []], ["b", "L", False, False, []], ["b", "C", False, [], []], ["b", "W", False, False, []], 
+                ["b", "K", False, False, []], ["b", "H", False, [], []], ["b", "L", False, False, []], ["b", "O", False, False, []]]]
+
+
+
 

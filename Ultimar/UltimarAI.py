@@ -38,10 +38,11 @@ def findGreedyMove(gs, validMoves):
     return bestPlayerMove
 
 
-def findBestMoveMinMax(gs, validMoves):  # helper method to make first recursive call
+def findBestMove(gs, validMoves):  # helper method to make first recursive call
     global nextMove
     nextMove = None
-    findMoveMinMax(gs, validMoves, DEPTH, gs.whiteToMove)
+    #findMoveMinMax(gs, validMoves, DEPTH, gs.whiteToMove)
+    findMoveNegaMax(gs, validMoves, DEPTH, 1 if gs.whiteToMove else -1)
     return nextMove
 
 def findMoveMinMax(gs, validMoves, depth, whiteToMove):
@@ -75,6 +76,26 @@ def findMoveMinMax(gs, validMoves, depth, whiteToMove):
                     nextMove = move
             gs.logCutoff(-2)
         return minScore
+    
+
+def findMoveNegaMax(gs, validMoves, depth, turnMultiplier):
+    global nextMove
+    if depth == 0:
+        return turnMultiplier * scoreBoard(gs)
+    
+    maxScore = -WIN
+    for move in validMoves:
+        moveHolder = deepcopy(move)
+        gs.makeMove(moveHolder)
+        nextMoves = gs.getValidMoves()
+        score = -findMoveNegaMax(gs, nextMoves, depth-1, -turnMultiplier)
+        if score > maxScore:
+            maxScore = score
+            if depth == DEPTH:
+                nextMove = move
+        gs.logCutoff(-2)
+    return maxScore
+
 
 '''
 positive score is good for white, negative good for black

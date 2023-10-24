@@ -5,7 +5,7 @@ main driver file
 import pygame as p
 import sys
 from copy import deepcopy
-from Ultimar import UltimarEngine, UltimarAI
+from Ultimar import UltimarEngine, UltimarAI, UltimarMenu
 
 WIDTH = HEIGHT = 512  # tweak idea : user inputted / selected board size
 DIMENSION = 8  # board dimensions are 8x8
@@ -25,7 +25,27 @@ def main():
     p.init()
     screen = p.display.set_mode((WIDTH, HEIGHT))
     clock = p.time.Clock()
-    options = runMenu(screen)
+    options = UltimarMenu.runMenu(screen)  # runs menu, returns dictionary of options
+    print(options)
+
+    playerOne = False
+    playerTwo = False
+    if options[0]:  # handles the options inputs as fed in by menu
+        playerOne = True
+        playerTwo = True
+    elif options[1]:
+        if options[6]:
+            playerOne = True
+        else:
+            playerTwo = True
+            UltimarEngine.boardSelect = False
+
+    enableUndo = options[3]
+    global immobHighlights 
+    immobHighlights = options[4]
+    global moveHighlights
+    moveHighlights = options[5]
+
     screen.fill(p.Color("white"))
     gs = UltimarEngine.GameState()
     validMoves = gs.getValidMoves()
@@ -37,24 +57,6 @@ def main():
     playerClicks = []  # keeps track of player clicks (two tuples) - can be used for log
     gameOver = False  # for Checkmates/stalemates
     navigator = -1  # used to track navigation thru gameLog
-    playerOne = True  # if a human is playing white, then this is true. Else False
-    playerTwo = True  # as above, but for black
-    enableUndo = False
-    global enableHighlights
-    if 3 in options:
-        playerOne = False
-        playerTwo = False
-    elif 2 in options:
-        if 7 in options:
-            playerTwo = False
-        else: 
-            playerOne = False
-    if 4 in options:
-        enableUndo = True
-    if 5 in options:
-        enableHighlights = True
-    else:
-        enableHighlights = False
 
     while running:
         humanTurn = (gs.whiteToMove and playerOne) or (not gs.whiteToMove and playerTwo)
@@ -116,7 +118,7 @@ def main():
 
         # AI move finder
         if not gameOver and not humanTurn:
-            AIMove = UltimarAI.findBestMoveMinMax(gs, validMoves)
+            AIMove = UltimarAI.findBestMove(gs, validMoves)
             print(AIMove)
             if AIMove is None:
                 AIMove = UltimarAI.findRandomMove(validMoves)
@@ -155,99 +157,6 @@ def main():
 
         clock.tick(MAX_FPS)
         p.display.flip()
-
-def runMenu(screen):
-
-    class Button:
-        def __init__(self, reference, colour, text, location):
-
-            self.reference = reference
-            font = p.font.SysFont('Corbel', 35)
-            self.colour = p.Color(colour)
-            self.text = font.render(text, True, p.Color('black'))
-            self.dimensions = [location[0], location[1], WIDTH/3, HEIGHT/18]
-            self.textOffset = 10
-            self.leftEdge = location[0]
-            self.rightEdge = location[0] + WIDTH/3
-            self.topEdge = location[1]
-            self.bottomEdge = location[1] + HEIGHT/18 
-
-    twoPlayerButton = Button(1, "white", "Two Player", (WIDTH/4, HEIGHT/4))
-    onePlayerButton = Button(2, "white", "One Player", (WIDTH/4, HEIGHT/2))
-    aiShowdownButton = Button(3, "white", "AI vs AI", (WIDTH/4, HEIGHT/3))
-    undoMovesButton = Button(4, "white", "Undos", (WIDTH/4, HEIGHT/4))
-    highlightButton = Button(5, "white", "Highlight Immobilised Pieces", (WIDTH/4, HEIGHT/2))
-    colorSelectSquare = Button(6, "white", "Select Color", (WIDTH/4, HEIGHT/3))
-    whiteButton = Button(7, "white", "White", (WIDTH/4, HEIGHT/3 + HEIGHT/18))
-    blackButton = Button(8, "white", "Black", (WIDTH/4 + WIDTH/3, HEIGHT/3 + HEIGHT/18))
-    enterGameButton = Button(9, "white", "Enter Game!", (WIDTH/2, HEIGHT/2))
-    backButton = Button(0, "white", "Back", (WIDTH/6, HEIGHT - 20))
-
-    menuOne = [twoPlayerButton, onePlayerButton, aiShowdownButton]
-    menuTwo = [undoMovesButton, highlightButton, enterGameButton, backButton]
-    colorSelectButtons = [whiteButton, blackButton]
-    selectedPresets = []  # used to store clicked buttons so these can be fed into Ultimar program when menu exited 
-
-    inMenu = True
-    currentMenu = menuOne  # marker that allows current menu to switch between button groups
-    while inMenu:
-        for ev in p.event.get():
-            if ev.type == p.QUIT:
-                p.quit()
-            if ev.type == p.MOUSEBUTTONDOWN:  # checks for mouseclick
-                for button in currentMenu:
-                    if button.leftEdge <= mouse[0] <= button.rightEdge and button.topEdge <= mouse[1] <= button.bottomEdge:  # if click occurs in button footprint
-                        if currentMenu == menuOne:
-                                if not selectedPresets:  # if selected presets is empty, adds button and moves to next menu
-                                    selectedPresets.append(button)
-                                    currentMenu = menuTwo
-                                else:
-                                    selectedPresets.remove(button)  # otherwise, removes button
-                                    button.colour = "white"
-                        else:  # if in menu 2
-                            if button == backButton:
-                                selectedPresets.clear()
-                                for x in menuOne:
-                                    x.colour = "white"
-                                currentMenu = menuOne
-                            elif button == enterGameButton:  # if enter game button, exits menu function
-                                optionReferenceList = []
-                                for preset in selectedPresets:
-                                    optionReferenceList.append(preset.reference)
-                                return optionReferenceList
-                            elif button not in selectedPresets:  # if button not already selected, removes other color select button if necessary and adds to selected list
-                                selectedPresets.append(button)
-                            elif button in selectedPresets:  # covers selected buttons being pressed again
-                                selectedPresets.remove(button)
-                                button.colour = "white"
-                if onePlayerButton in selectedPresets:
-                    for colorButton in colorSelectButtons:
-                        if colorButton.leftEdge <= mouse[0] <= colorButton.rightEdge and colorButton.topEdge <= mouse[1] <= colorButton.bottomEdge:  # if click occurs in button footprint
-                            if (colorButton == whiteButton and blackButton in selectedPresets) or (colorButton == blackButton and whiteButton in selectedPresets):
-                                selectedPresets.remove(blackButton) if colorButton == whiteButton else selectedPresets.remove(whiteButton)
-                            else:
-                                selectedPresets.append(colorButton)
-
-                for button in selectedPresets:
-                    if button in selectedPresets:  # changes colour of selected button
-                        button.colour = "yellow1"
-                    else:
-                        button.colour = "white"
-
-        screen.fill(p.Color("gray69"))
-        mouse = p.mouse.get_pos()
-
-        for button in currentMenu:
-            p.draw.rect(screen, button.colour, button.dimensions)
-            screen.blit(button.text, (button.leftEdge + 10, button.topEdge + 3))
-
-        if currentMenu == menuTwo and onePlayerButton in selectedPresets:
-            for colorButton in colorSelectButtons:
-                p.draw.rect(screen, colorButton.colour, colorButton.dimensions)
-                screen.blit(colorButton.text, (colorButton.leftEdge + 10, colorButton.topEdge + 3))
-
-        p.display.update()
-
             
 '''
 Highlight square selected and moves for piece selected
@@ -287,8 +196,9 @@ Responsible for all graphics within current game state
 '''
 def drawGameState(screen, gs, validMoves, sqSelected):
     drawBoard(screen) # draws squares on board
-    highlightSquares(screen, gs, validMoves, sqSelected)
-    if enableHighlights:
+    if moveHighlights:
+        highlightSquares(screen, gs, validMoves, sqSelected)
+    if immobHighlights:
         flagImmobilisedSqs(screen, getImmobilisedSqs(gs))
     drawPieces(screen, gs.board) # draws pieces on top of squares
 
