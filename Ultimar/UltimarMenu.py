@@ -21,19 +21,13 @@ def loadImages():
     for pic in range(24):
         MENUS[pic] = p.transform.scale(p.image.load("Ultimar/images/Menus/gameplaymenu/menu2_" + str(pic) + ".png"), (WIDTH, HEIGHT))
     MENUS[25] = p.transform.scale(p.image.load("Ultimar/images/Menus/mainmenu/main_menu.png"), (WIDTH, HEIGHT))
-    MENUS[26] = p.transform.scale(p.image.load("Ultimar/images/Menus/mainmenu/mainmenu_buttons_1.png"), (WIDTH, HEIGHT))
-    MENUS[27] = p.transform.scale(p.image.load("Ultimar/images/Menus/mainmenu/mainmenu_buttons_2.png"), (WIDTH, HEIGHT))
-    MENUS[28] = p.transform.scale(p.image.load("Ultimar/images/Menus/mainmenu/mainmenu_buttons_3.png"), (WIDTH, HEIGHT))
-    MENUS[39] = p.transform.scale(p.image.load("Ultimar/images/Menus/mainmenu/mainmenu_buttons_blank.png"), (WIDTH, HEIGHT))
-    MENUS[30] = p.transform.scale(p.image.load("Ultimar/images/Menus/transition_100p opacity.png"), (WIDTH, HEIGHT))
-    MENUS[31] = p.transform.scale(p.image.load("Ultimar/images/Menus/mainmenu/Main_background_rotated.png"), (WIDTH, HEIGHT))
-    MENUS[32] = p.transform.scale(p.image.load("Ultimar/images/Menus/mainmenu/main_menu_1.png"), (WIDTH, HEIGHT))
-    MENUS[33] = p.transform.scale(p.image.load("Ultimar/images/Menus/mainmenu/main_menu_2.png"), (WIDTH, HEIGHT))
-    MENUS[34] = p.transform.scale(p.image.load("Ultimar/images/Menus/mainmenu/main_menu_3.png"), (WIDTH, HEIGHT))
-    MENUS[35] = p.transform.scale(p.image.load("Ultimar/images/Menus/mainmenu/main_menu_background.png"), (WIDTH, HEIGHT))
-    MENUS[36] = p.transform.scale(p.image.load("Ultimar/images/Menus/menu2.png"), (WIDTH, HEIGHT))
-    for pic in range(37, 40):
-        MENUS[pic] = p.transform.scale(p.image.load("Ultimar/images/Menus/colorselect/colorSelect_" + str(pic-37) + ".png"), (WIDTH, HEIGHT))
+    MENUS[26] = p.transform.scale(p.image.load("Ultimar/images/Menus/mainmenu/main_menu_1.png"), (WIDTH, HEIGHT))
+    MENUS[27] = p.transform.scale(p.image.load("Ultimar/images/Menus/mainmenu/main_menu_2.png"), (WIDTH, HEIGHT))
+    MENUS[28] = p.transform.scale(p.image.load("Ultimar/images/Menus/mainmenu/main_menu_3.png"), (WIDTH, HEIGHT))
+    MENUS[29] = p.transform.scale(p.image.load("Ultimar/images/Menus/mainmenu/main_menu_background.png"), (WIDTH, HEIGHT))
+    for pic in range(30, 33):
+        MENUS[pic] = p.transform.scale(p.image.load("Ultimar/images/Menus/colorselect/colorSelect_" + str(pic-30) + ".png"), (WIDTH, HEIGHT))
+    MENUS[33] = p.transform.scale(p.image.load("Ultimar/images/Menus/transition_100p opacity.png"), (WIDTH, HEIGHT))
 
     for image in MENUS:
         MENUS[image] = MENUS[image].convert_alpha()  # converts photos into easier to blit format, with alpha settings
@@ -41,11 +35,11 @@ def loadImages():
 def isMainButton(mouse):  # checks if mouse pos in main menu is in button area
     if 82.8 <= mouse[0] <= 429.2:
         if 222 <= mouse[1] <= 262.9:
-            return 32
+            return 26
         elif 292.6 <= mouse[1] <= 333.5:
-            return 33
+            return 27
         elif 356.4 <= mouse[1] <= 397.3:
-            return 34
+            return 28
     else:
         return False
     
@@ -79,7 +73,7 @@ def isGameplayButton(mouse):
             x = 2
         elif 296 <= mouse[1] <= 331:  # highlight moves button
             x = 3
-    elif 376 <= mouse[1] <= 411:  # checks y axis to see if it is at right height for back/enter buttons
+    elif 306 <= mouse[1] <= 411:  # checks y axis to see if it is at right height for back/enter buttons
         if 58 <= mouse[0] <= 173:  # checks is back button
             x = 4
         elif 201 <= mouse[0] <= 459:  # enter button
@@ -94,12 +88,12 @@ def colorSelect(mouse):  # checks mouse pos on select color screen. Returns Fasl
             return True
         
 def fadeBlack(screen):
-    MENUS[30].set_alpha(0)  # fade to black
+    MENUS[33].set_alpha(0)  # fade to black
     i = 0
     while i <= 254:
         i += 2
-        MENUS[30].set_alpha(i)
-        screen.blit(MENUS[30], (0,0))
+        MENUS[33].set_alpha(i)
+        screen.blit(MENUS[33], (0,0))
         p.display.flip()
         clock.tick(60)
 
@@ -135,7 +129,7 @@ def runMainMenu(screen):
                     if colorSelect(p.mouse.get_pos()):
                         options[6] = False
                     fadeBlack(screen)
-                    mainscreen = 30
+                    mainscreen = 33
                     colorSelectMenu = False
                     inMenu = False
             if ev.type == p.K_DELETE:
@@ -149,11 +143,11 @@ def runMainMenu(screen):
                 mainscreen = 25
 
             if mainButton:  # checks to see if button has been clicked, and adds relevant info to options array
-                if mainButton == 32:
+                if mainButton == 26:
                     options[0] = True
-                elif mainButton == 33:
+                elif mainButton == 27:
                     options[1] = True
-                elif mainButton == 34:
+                elif mainButton == 28:
                     options[2] = True
                 
                 mainscreen = mainButton  # if click is inside button, passes dict reference for relevant screen
@@ -169,40 +163,40 @@ def runMainMenu(screen):
                 options[gameplayButton + 2] = not options[gameplayButton + 2]
             elif gameplayButton == 4:  # if back button pressed
                 # fade to black 
-                MENUS[30].set_alpha(0)
+                MENUS[33].set_alpha(0)
                 i = 0
                 while i <= 254:
                     i += 2
-                    MENUS[30].set_alpha(i)
-                    screen.blit(MENUS[30], (0,0))
+                    MENUS[33].set_alpha(i)
+                    screen.blit(MENUS[33], (0,0))
                     p.display.flip()
                     clock.tick(60)
                 runMainMenu(screen)  # runs function again
             elif gameplayButton == 5:  # enter button
                 if not options[1]:
                     fadeBlack(screen)
-                    mainscreen = 30
+                    mainscreen = 33
                     inMenu = False
                 else:
-                    MENUS[37].set_alpha(0)
+                    MENUS[30].set_alpha(0)
                     i = 0
                     while i <= 255:
                         i += 2
-                        MENUS[37].set_alpha(i)
-                        screen.blit(MENUS[37], (0,0))
+                        MENUS[30].set_alpha(i)
+                        screen.blit(MENUS[30], (0,0))
                         p.display.flip()
                         clock.tick(60)
                     gameplayMenu = False
                     colorSelectMenu = True
-                    mainscreen = 37
+                    mainscreen = 30
             gameplayButton = False  # resets button
 
         elif colorSelectMenu:
             color = colorSelect(p.mouse.get_pos())
-            mainscreen = 39 if color else 38
+            mainscreen = 32 if color else 31
 
         if mainAnimation:
-            background = MENUS[35]
+            background = MENUS[29]
             for i in range(150):
                 background.set_alpha(i/8)  # incrementally increases background alpha
                 screen.blit(background, (0,0))
@@ -213,18 +207,18 @@ def runMainMenu(screen):
                 background = p.transform.smoothscale(background, (WIDTH+i/2, HEIGHT+i/2))
                 screen.blit(background, (-i/2,-i/2))
                 if i > 50:
-                    MENUS[30].set_alpha((i-50)*2)
-                    screen.blit(MENUS[30], (0,0))
+                    MENUS[33].set_alpha((i-50)*2)
+                    screen.blit(MENUS[33], (0,0))
                 p.display.flip()
                 clock.tick(60)
 
-            MENUS[30].set_alpha(250)
+            MENUS[33].set_alpha(250)
             i = 250
             while i >= 0:
                 i -= 2
-                MENUS[30].set_alpha(i)
+                MENUS[33].set_alpha(i)
                 screen.blit(MENUS[12], (0,0))
-                screen.blit(MENUS[30], (0,0))
+                screen.blit(MENUS[33], (0,0))
                 p.display.flip()
                 clock.tick(60)
             mainMenu = False
