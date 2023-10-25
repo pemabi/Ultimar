@@ -26,7 +26,6 @@ def main():
     screen = p.display.set_mode((WIDTH, HEIGHT))
     clock = p.time.Clock()
     options = UltimarMenu.runMenu(screen)  # runs menu, returns dictionary of options
-    print(options)
 
     playerOne = False
     playerTwo = False
@@ -119,16 +118,13 @@ def main():
         # AI move finder
         if not gameOver and not humanTurn:
             AIMove = UltimarAI.findBestMove(gs, validMoves)
-            print(AIMove)
             if AIMove is None:
                 AIMove = UltimarAI.findRandomMove(validMoves)
             gs.makeMove(AIMove)
-            print(AIMove.pieceMoved)
             moveMade = True
             animate = True
 
         if moveMade:
-            print(gs.counter)
             gs.counter = 0
             if animate:
                 animateMove(gs.moveLog[-1], screen, gs.board, clock)

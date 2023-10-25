@@ -7,7 +7,7 @@ dictionary that holds piece values - can play around with these. King set at 100
 pieceScore = {'P': 1, 'I': 8, 'L': 5, 'C': 6, 'H': 6, 'K': 1000, 'W': 5, 'O': 3}
 WIN = 10000
 STALEMATE = 0
-DEPTH = 2
+DEPTH = 3
 
 '''
 picks and returns a random move
@@ -39,11 +39,14 @@ def findGreedyMove(gs, validMoves):
 
 
 def findBestMove(gs, validMoves):  # helper method to make first recursive call
-    global nextMove
+    global nextMove, counter
     nextMove = None
     #findMoveMinMax(gs, validMoves, DEPTH, gs.whiteToMove)
+    #counter = 0
     random.shuffle(validMoves)
-    findMoveNegaMax(gs, validMoves, DEPTH, 1 if gs.whiteToMove else -1)
+    #findMoveNegaMax(gs, validMoves, DEPTH, 1 if gs.whiteToMove else -1)
+    findMoveNegaMaxAlphaBeta(gs, validMoves, DEPTH, -WIN, WIN, 1 if gs.whiteToMove else -1)
+    #print(counter)
     return nextMove
 
 def findMoveMinMax(gs, validMoves, depth, whiteToMove):
@@ -80,7 +83,8 @@ def findMoveMinMax(gs, validMoves, depth, whiteToMove):
     
 
 def findMoveNegaMax(gs, validMoves, depth, turnMultiplier):
-    global nextMove
+    global nextMove, counter
+    #counter += 1
     if depth == 0:
         return turnMultiplier * scoreBoard(gs)
     
@@ -97,24 +101,28 @@ def findMoveNegaMax(gs, validMoves, depth, turnMultiplier):
         gs.logCutoff(-2)
     return maxScore
 
-def findMoveNegaMaxAlphaBeta(gs, validMoves, depth, alpha, beta, turnMultiplier):
-    global nextMove
+def findMoveNegaMaxAlphaBeta(gs, validMoves, depth, alpha, beta, turnMultiplier):  # AB pruning takes branch count of white's first move down from 977 to 94 @depth 2 and 93,379 to 2,360 @depth3 (naive scoring algorithm)
+    global nextMove, counter
+    #counter += 1
     if depth == 0:
         return turnMultiplier * scoreBoard(gs)
     
-
-    
+    # move ordering - evaluate certain moves first paired with AB pruning to improve efficiency - can implement later
     maxScore = -WIN
     for move in validMoves:
         moveHolder = deepcopy(move)
         gs.makeMove(moveHolder)
         nextMoves = gs.getValidMoves()
-        score = -findMoveNegaMax(gs, nextMoves, depth-1, -turnMultiplier)
+        score = -findMoveNegaMaxAlphaBeta(gs, nextMoves, depth-1, -beta, -alpha, -turnMultiplier)
         if score > maxScore:
             maxScore = score
             if depth == DEPTH:
                 nextMove = move
         gs.logCutoff(-2)
+        if maxScore > alpha:  # pruning
+            alpha = maxScore
+        if alpha >= beta:  # break case - no need to evaluate rest of tree
+            break
     return maxScore
 
 '''
