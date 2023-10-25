@@ -42,6 +42,7 @@ def findBestMove(gs, validMoves):  # helper method to make first recursive call
     global nextMove
     nextMove = None
     #findMoveMinMax(gs, validMoves, DEPTH, gs.whiteToMove)
+    random.shuffle(validMoves)
     findMoveNegaMax(gs, validMoves, DEPTH, 1 if gs.whiteToMove else -1)
     return nextMove
 
@@ -96,6 +97,25 @@ def findMoveNegaMax(gs, validMoves, depth, turnMultiplier):
         gs.logCutoff(-2)
     return maxScore
 
+def findMoveNegaMaxAlphaBeta(gs, validMoves, depth, alpha, beta, turnMultiplier):
+    global nextMove
+    if depth == 0:
+        return turnMultiplier * scoreBoard(gs)
+    
+
+    
+    maxScore = -WIN
+    for move in validMoves:
+        moveHolder = deepcopy(move)
+        gs.makeMove(moveHolder)
+        nextMoves = gs.getValidMoves()
+        score = -findMoveNegaMax(gs, nextMoves, depth-1, -turnMultiplier)
+        if score > maxScore:
+            maxScore = score
+            if depth == DEPTH:
+                nextMove = move
+        gs.logCutoff(-2)
+    return maxScore
 
 '''
 positive score is good for white, negative good for black
@@ -103,9 +123,9 @@ positive score is good for white, negative good for black
 def scoreBoard(gs):
     if gs.checkmate:
         if gs.whiteToMove:
-            return -WIN
-        else:
             return WIN
+        else:
+            return -WIN
     elif gs.stalemate:
         return STALEMATE
 
@@ -117,13 +137,13 @@ def scoreBoard(gs):
                 if square[4]:
                     score -= (pieceScore[square[1]] / 2)  # subtracts half of immobilised pieces score
                 if square[2]:
-                    score -= (pieceScore[square[1]] / 2)
+                    score -= (pieceScore[square[1]] / 4)
             elif square and square[0] == 'b':
                 score -= pieceScore[square[1]]
                 if square[4]:
                     score += (pieceScore[square[1]] / 2)
                 if square[2]:
-                    score += (pieceScore[square[1]] / 2)
+                    score += (pieceScore[square[1]] / 4)
     return score
 
 '''

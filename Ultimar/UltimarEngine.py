@@ -112,6 +112,7 @@ class GameState():
             c1 = attacks[i][1]
             self.immobiliserCaller(r1, c1, self.board[r1][c1])  # handles captured Immobilising pieces
             if self.board[r1][c1][1] == 'K':
+                #print(move.pieceMoved, (move.startRow, move.startCol), (move.endRow, move.endCol))
                 self.checkmate = True
             self.board[r1][c1] = []
 
@@ -223,9 +224,18 @@ class GameState():
         self.withdraws(r, c, move, attacks, move.pieceType, ['W'])
         self.getLeaperAttacks(r, c, move, attacks)
         self.coordinators(r, c, attacks, ['O'])
-
+            
         if self.isEnemy(r, c) and self.board[r][c][1] == 'K':
             attacks.append((r, c))
+
+        if move.moveDirection in [(1, 0), (0, 1), (0, -1), (-1, 0)]:  # appends attacks on pawns
+            for border in borders:  # if cham moves along rank/file, for bordering pieces
+                if 0 <= (r + border[0]) < 8 and 0 <= (c + border[1]) < 8:  # if bordering piece on board
+                    if self.isEnemy((r + border[0]), (c + border[1])):  # if bordering piece is enemy
+                        if self.board[(r + border[0])][(c + border[1])][1] == 'P':  # if it is enemy pawn
+                            if 0 <= (r + 2 * border[0]) < 8 and 0 <= (c + 2 * border[1]) < 8:  # if piece on opposite side of enemy pawn from cham is on board
+                                if self.isAlly((r + 2 * border[0]), (c + 2 * border[1])):  # if piece is an ally
+                                    attacks.append(((r + border[0]), (c + border[1]))) # append attack
 
         neighbours = self.getNeighbourSquares(r, c)
         for neighbour in neighbours:
