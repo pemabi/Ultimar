@@ -141,7 +141,7 @@ def main():
                         drawText(screen, 'CONGRATULATIONS!You are the first human to defeat UltimarAI!')
                     else:
 
-                        drawText(screen, 'You were crushed by UltimarAI...')
+                        running = endgame(screen, clock)
                 else:
                     if gs.whiteToMove:
                         drawText(screen, 'Black wins!')
@@ -248,6 +248,46 @@ def drawText(screen, text):
     textObject = font.render(text, 0, p.Color('Black'))
     screen.blit(textObject, textLocation.move(2, 2))
 
+def endgame(screen, clock):
+    spookyRobot = p.transform.scale(p.image.load("Ultimar/images/Menus/endgame/spookyrobot.png"), (WIDTH, HEIGHT))
+    endgameScreen = p.transform.scale(p.image.load("Ultimar/images/Menus/endgame/endgametext.png"), (WIDTH, HEIGHT))
+    blackScreen = p.transform.scale(p.image.load("Ultimar/images/Menus/transition_100p opacity.png"), (WIDTH, HEIGHT))
+    endgameScreen = endgameScreen.convert_alpha()
+    blackScreen = blackScreen.convert_alpha()
+
+    # wait for a sec
+    p.time.wait(300)
+    # fade to black
+    UltimarMenu.fadeBlack(screen)  # if this doesn't work, may have to pass in clock
+    screen.blit(blackScreen, (0, 0))
+    p.display.flip()
+    clock.tick(60)
+    # fade in robot and mainscreen(robot on delay)
+    inGame = True
+    alpha = 255
+    while inGame:
+        for e in p.event.get():
+            if e.type == p.QUIT:
+                inGame = False
+                return False
+            # mouse handler
+            elif e.type == p.KEYDOWN:
+                inGame = False
+    # set robot and mainscreen to max alpha
+        # fade mainscreen in and out
+        if alpha >= 255:  # hitting upper bounds means negative increment
+            increment = -1
+            p.time.wait(1000)
+        elif alpha <= 230:  # hitting lower bounds means positive increment
+            increment = 1
+        alpha = alpha + increment
+        endgameScreen.set_alpha(alpha)
+
+        screen.blit(spookyRobot, (0, 0))
+        screen.blit(endgameScreen, (0, 0))
+
+        p.display.flip()
+        clock.tick(10)
 
 if __name__ == "__main__":
     main()

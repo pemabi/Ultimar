@@ -1,7 +1,11 @@
 # Ultimar
 Ultimar chess variant with basic AI. Made for TG.
 
+Project used as an introduction to Python and Git.
+
 Massive thanks to Eddie Sharick https://www.youtube.com/@eddiesharick6649 and his series of youtube videos on building a chess engine with python/pygame - was my introduction to learning python and serves as the foundation for much of this code (easy to tell whose is whose!).
+
+Credit also to the V&A South Kensington for the use of their tile graphic https://www.vam.ac.uk/articles/design-and-make-your-own-islamic-tile-and-printed-pattern
 
 recommended depth: 2/3
 

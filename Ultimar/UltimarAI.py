@@ -7,7 +7,7 @@ dictionary that holds piece values - can play around with these. King set at 100
 pieceScore = {'P': 1, 'I': 8, 'L': 5, 'C': 6, 'H': 6, 'K': 1000, 'W': 5, 'O': 3}
 WIN = 10000
 STALEMATE = 0
-DEPTH = 3
+DEPTH = 2
 
 '''
 picks and returns a random move
